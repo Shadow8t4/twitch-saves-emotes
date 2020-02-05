@@ -88,22 +88,25 @@ def save_twitch_emotes_images(service, dirpath, emote_array):
 
     if(service.lower() == 'twitch'):
         for emote_index in emote_array:
-            if(not exists(f'{dirpath}/{emote_index[0]}.png')):
+            if(not exists(f'{dirpath}/{emote_index[1].lower()}.png')):
                 headers = {
                     'accept': 'application/vnd.twitchtv.v5+json',
                     'Client-ID': 'x9pe1nhx03034xssm1kcla36unubrc'
                 }
                 req = requests.get(
                     f'{twitch_emote_file_tmpl}{emote_index[0]}/1.0', headers=headers)
-                emote_file = open(f'{dirpath}/{emote_index[0]}.png', 'bw+')
-                emote_file.write(req.content)
-                emote_file.close()
+                if('/' in emote_index[1] or '\\' in emote_index[1] or ':' in emote_index[1]):
+                    pass
+                else:
+                    emote_file = open(f'{dirpath}/{emote_index[1].lower()}.png', 'bw+')
+                    emote_file.write(req.content)
+                    emote_file.close()
     elif(service.lower() == 'bttv'):
         for emote_index in emote_array:
-            if(not exists(f'{dirpath}/{emote_index[0]}.png')):
+            if(not exists(f'{dirpath}/{emote_index[1].lower()}.png')):
                 req = requests.get(
                     f'{bttv_emote_file_tmpl}{emote_index[0]}/1x')
-                emote_file = open(f'{dirpath}/{emote_index[0]}.png', 'bw+')
+                emote_file = open(f'{dirpath}/{emote_index[1].lower()}.png', 'bw+')
                 emote_file.write(req.content)
                 emote_file.close()
 
