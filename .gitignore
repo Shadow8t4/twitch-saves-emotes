@@ -1,0 +1,6 @@
+out/**
+.api_token*
+.vscode
+Pipfile.lock
+**/__pycache__/**
+**.pyc
