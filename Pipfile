@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pipfile = "*"
+autopep8 = "*"
+pylint = "*"
+
+[packages]
+pipfile = "*"
+requests = "*"
+slackclient = "*"
+
+[required]
+python = "*" # Replace this with your project's stable Python version
