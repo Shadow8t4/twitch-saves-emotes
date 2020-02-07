@@ -4,3 +4,4 @@ out/**
 Pipfile.lock
 **/__pycache__/**
 **.pyc
+.client_id*

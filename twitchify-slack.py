@@ -15,6 +15,25 @@ bttv_emote_api_link = 'https://api.betterttv.net/2/emotes'
 # BTTV emote link for emote images
 bttv_emote_file_tmpl = 'https://cdn.betterttv.net/emote/'
 
+def import_client_id():
+    if(exists('.client_id')):
+        try:
+            client_id_file = open('.client_id', 'rt')
+            output = client_id_file.readline().strip()
+            print(output)
+            return output
+        except Exception as e:
+            print(e)
+            exit(1)
+    
+    else:
+        try:
+            client_id = environ['TWITCH_APP_CLIENT_ID']
+            return client_id
+        except Exception as e:
+            print(e)
+            exit(1)
+
 
 def grab_id(n):
     """Map function to extract the id and code from each dictionary entry
@@ -28,7 +47,7 @@ def grab_id(n):
     return [f'{n["id"]}', f'{n["code"]}']
 
 
-def request_twitch_emote_ids(service):
+def request_twitch_emote_ids(client_id, service):
     """Send the request for a json of the Twitch emote metadata
     
     Arguments:
@@ -43,7 +62,7 @@ def request_twitch_emote_ids(service):
     if(service.lower() == 'twitch'):
         headers = {
             'accept': 'application/vnd.twitchtv.v5+json',
-            'Client-ID': 'x9pe1nhx03034xssm1kcla36unubrc'
+            'Client-ID': client_id
         }
         req = requests.get(twitch_emote_api_link, headers=headers)
         req_dict = json.loads(req.content)
@@ -74,7 +93,7 @@ def save_twitch_emotes_metadata(dirpath, emote_array):
     metadata_file.close()
 
 
-def save_twitch_emotes_images(service, dirpath, emote_array):
+def save_twitch_emotes_images(client_id, service, dirpath, emote_array):
     """Send a request for the emote images and save them locally to a specified directory
     
     Arguments:
@@ -91,7 +110,7 @@ def save_twitch_emotes_images(service, dirpath, emote_array):
             if(not exists(f'{dirpath}/{emote_index[1].lower()}.png')):
                 headers = {
                     'accept': 'application/vnd.twitchtv.v5+json',
-                    'Client-ID': 'x9pe1nhx03034xssm1kcla36unubrc'
+                    'Client-ID': client_id
                 }
                 req = requests.get(
                     f'{twitch_emote_file_tmpl}{emote_index[0]}/1.0', headers=headers)
@@ -112,14 +131,17 @@ def save_twitch_emotes_images(service, dirpath, emote_array):
 
 
 def main():
+    # Attempt import of Client ID
+    client_id = import_client_id()
+
     # Grab the Twitch official emotes
-    emotes_array = request_twitch_emote_ids('twitch')
-    save_twitch_emotes_images('twitch', 'out', emotes_array)
+    emotes_array = request_twitch_emote_ids(client_id, 'twitch')
+    save_twitch_emotes_images(client_id, 'twitch', 'out', emotes_array)
     save_twitch_emotes_metadata('out', emotes_array)
 
     # Grab the BTTV emotes
-    emotes_array = request_twitch_emote_ids('bttv')
-    save_twitch_emotes_images('bttv', 'out', emotes_array)
+    emotes_array = request_twitch_emote_ids(client_id, 'bttv')
+    save_twitch_emotes_images(client_id, 'bttv', 'out', emotes_array)
     save_twitch_emotes_metadata('out', emotes_array)
 
 
